@@ -1,10 +1,26 @@
 import React from 'react';
 
+// Define the shape of a Vector Database Plan
+interface VectorDatabase {
+  id: string;
+  name: string;
+  price: number;
+  description: string;
+  tag?: string;
+  storageLimit?: string;
+}
+
+interface VectorDbProps {
+  databases: VectorDatabase[];
+  selectedDb: VectorDatabase;
+  setSelectedDb: (db: VectorDatabase) => void;
+}
+
 export default function VectorDbCard({
   databases,
   selectedDb,
   setSelectedDb
-}) {
+}: VectorDbProps) {
   return (
     <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200 font-sans h-full">
       

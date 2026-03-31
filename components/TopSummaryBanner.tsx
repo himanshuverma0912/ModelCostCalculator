@@ -1,9 +1,35 @@
 import React from 'react';
 
+interface Model {
+  inPrice: number;
+  outPrice: number;
+  cacheRate?: number;
+}
+
+interface EmbeddingModel {
+  price: number;
+}
+
+interface VectorDb {
+  price: number;
+}
+
+interface TopSummaryProps {
+  selectedModel: Model;
+  selectedEmbedding: EmbeddingModel;
+  selectedDb: VectorDb;
+  users: number;
+  msgsPerDay: number;
+  inputTokens: number;
+  outputTokens: number;
+  useCaching: boolean;
+  cachedTokens: number;
+}
+
 export default function TopSummaryBanner({
   selectedModel, selectedEmbedding, selectedDb,
   users, msgsPerDay, inputTokens, outputTokens, useCaching, cachedTokens
-}) {
+}: TopSummaryProps) {
   const totalMsgs = users * msgsPerDay * 30;
 
   // 1. LLM Math (With Cache)
@@ -75,7 +101,18 @@ export default function TopSummaryBanner({
 }
 
 // Small helper component for the 4 dark cards
-function MetricCard({ title, value, valueColor = "text-[#d4af37]" }) {
+interface MetricCardProps {
+  title: string;
+  value: string | number;
+  valueColor?: string; // The '?' means this is optional
+}
+
+// 2. Apply the interface to the function
+function MetricCard({ 
+  title, 
+  value, 
+  valueColor = "text-[#d4af37]" 
+}: MetricCardProps) {
   return (
     <div className="bg-[#1e1a16] p-5 rounded-lg border border-[#3d3223] shadow-sm">
       <p className={`text-3xl font-serif font-bold ${valueColor} mb-2`}>{value}</p>

@@ -1,4 +1,29 @@
 import React from 'react';
+interface Model {
+  id: string;
+  name: string;
+  inPrice: number;
+  outPrice: number;
+  dotColor: string;
+  tagColor: string;
+  tag?: string;      // Optional to stay safe
+  source?: string;
+  cacheRate?: number;
+}
+
+interface ModelConfigProps {
+  models: Model[];
+  selectedModel: Model;
+  setSelectedModel: (m: Model) => void;
+  inputTokens: number;
+  setInputTokens: (v: number) => void;
+  outputTokens: number;
+  setOutputTokens: (v: number) => void;
+  useCaching: boolean;
+  setUseCaching: (v: boolean) => void;
+  cachedTokens: number;
+  setCachedTokens: (v: number) => void;
+}
 
 export default function ModelConfigCard({ 
   models, 
@@ -7,7 +32,7 @@ export default function ModelConfigCard({
   outputTokens, setOutputTokens, 
   useCaching, setUseCaching, 
   cachedTokens, setCachedTokens 
-}) {
+}:ModelConfigProps) {
   
   // 1. The Core Caching Math
   const actualCachedTokens = useCaching ? Math.min(inputTokens, cachedTokens) : 0;

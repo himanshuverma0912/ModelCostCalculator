@@ -1,4 +1,30 @@
-import React from 'react';
+// Define types for the sub-objects
+interface Model {
+  inPrice: number;
+  outPrice: number;
+}
+
+interface EmbeddingModel {
+  price: number;
+}
+
+interface VectorDb {
+  price: number;
+}
+
+interface ScaleAndSummaryProps {
+  users: number;
+  setUsers: (v: number) => void;
+  msgsPerDay: number;
+  setMsgsPerDay: (v: number) => void;
+  selectedModel: Model;
+  inputTokens: number;
+  outputTokens: number;
+  useCaching: boolean;
+  cachedTokens: number;
+  selectedEmbedding: EmbeddingModel;
+  selectedDb: VectorDb;
+}
 
 export default function ScaleAndSummaryCard({
   users, setUsers,
@@ -6,7 +32,7 @@ export default function ScaleAndSummaryCard({
   selectedModel, inputTokens, outputTokens, useCaching, cachedTokens,
   selectedEmbedding,
   selectedDb
-}) {
+}: ScaleAndSummaryProps) { // Typed props here
   // 1. LLM Math
   const actualCachedTokens = useCaching ? Math.min(inputTokens, cachedTokens) : 0;
   const uncachedTokens = inputTokens - actualCachedTokens;

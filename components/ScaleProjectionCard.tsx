@@ -1,20 +1,49 @@
 import React from 'react';
 
-// The tiers we want to project
+interface Model {
+  name: string;
+  inPrice: number;
+  outPrice: number;
+  cacheRate?: number;
+}
+
+interface EmbeddingModel {
+  name: string;
+  price: number;
+}
+
+interface VectorDb {
+  name: string;
+  price: number;
+}
+
+interface ScaleProjectionProps {
+  selectedModel: Model;
+  selectedEmbedding: EmbeddingModel;
+  selectedDb: VectorDb;
+  users: number;
+  setUsers: (v: number) => void;
+  msgsPerDay: number;
+  inputTokens: number;
+  outputTokens: number;
+  useCaching: boolean;
+  cachedTokens: number;
+}
+
 const PROJECTION_TIERS = [100, 500, 1000, 5000, 10000, 50000];
 
 export default function ScaleProjectionCard({
   selectedModel,
   selectedEmbedding,
   selectedDb,
-  users,        // The current slider value
-  setUsers,     // Function to change the slider when a row is clicked
+  users,
+  setUsers,
   msgsPerDay,
   inputTokens,
   outputTokens,
   useCaching,
   cachedTokens
-}) {
+}: ScaleProjectionProps) {
 
   // 1. Calculate the base LLM cost per message (constant across all tiers)
   const actualCachedTokens = useCaching ? Math.min(inputTokens, cachedTokens) : 0;

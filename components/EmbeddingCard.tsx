@@ -1,5 +1,22 @@
 import React from 'react';
 
+// Define the shape of an Embedding Model
+interface EmbeddingModel {
+  id: string;
+  name: string;
+  provider: string;
+  price: number;
+  dimensions: string;
+  tag?: string; // Optional to prevent the error we discussed
+}
+
+interface EmbeddingCardProps {
+  models: EmbeddingModel[];
+  selectedModel: EmbeddingModel;
+  setSelectedModel: (model: EmbeddingModel) => void;
+  users: number;
+}
+
 const EMBEDDING_CATEGORIES = [
   { name: "User messages", dailyTokens: 500 },
   { name: "Sage responses", dailyTokens: 4000 },
@@ -13,7 +30,7 @@ export default function EmbeddingCard({
   selectedModel, 
   setSelectedModel,
   users 
-}) {
+}:EmbeddingCardProps) {
   const totalDailyTokensPerUser = EMBEDDING_CATEGORIES.reduce((sum, cat) => sum + cat.dailyTokens, 0);
   const totalMonthlyTokens = totalDailyTokensPerUser * users * 30;
   const totalMonthlyCost = (totalMonthlyTokens / 1000000) * selectedModel.price;

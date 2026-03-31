@@ -4,7 +4,7 @@ import React from 'react';
 interface Model {
   id: string;
   name: string;
-  tag : string;
+  tag? : string;
   inPrice: number;
   outPrice: number;
   source: string;
@@ -42,7 +42,7 @@ export default function AllModelsRankedCard({
     const totalMsgs = users * msgsPerDay * 30;
     const actualCachedTokens = useCaching ? Math.min(inputTokens, cachedTokens) : 0;
     const uncachedTokens = inputTokens - actualCachedTokens;
-    const cachePrice = selectedModel.inPrice * (selectedModel.cacheRate || 0.10);
+    const cachePrice = m.inPrice * (m.cacheRate || 0.10);
 
     const uncachedCost = (uncachedTokens / 1000000) * m.inPrice;
     const cachedCost = (actualCachedTokens / 1000000) * cachePrice;
