@@ -1,15 +1,5 @@
 import React from 'react';
-export interface Model {
-  id: string;
-  name: string;
-  inPrice: number;
-  outPrice: number;
-  dotColor: string;
-  tagColor: string;
-  tag?: string;      // Optional to stay safe
-  source : string;
-  cacheRate?: number;
-}
+import { Model } from '../types';
 
 interface ModelConfigProps {
   models: Model[];

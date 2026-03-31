@@ -1,14 +1,15 @@
 import React from 'react';
 
 // Define the shape of a Vector Database Plan
-export interface VectorDb {
-  id: string;
-  name: string;
-  price: number;
-  storageLimit: string; // <-- Make sure there is NO '?' here
-  description: string;
-  tag?: string;
-}
+import { VectorDb } from '../types';
+// export interface VectorDb {
+//   id: string;
+//   name: string;
+//   price: number;
+//   storageLimit: string; // <-- Make sure there is NO '?' here
+//   description: string;
+//   tag?: string;
+// }
 
 interface VectorDbProps {
   databases: VectorDb[]; 

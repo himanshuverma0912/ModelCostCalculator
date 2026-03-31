@@ -1,18 +1,6 @@
 import React from 'react';
 
-interface Model {
-  inPrice: number;
-  outPrice: number;
-  cacheRate?: number;
-}
-
-interface EmbeddingModel {
-  price: number;
-}
-
-interface VectorDb {
-  price: number;
-}
+import { Model, EmbeddingModel, VectorDb } from '../types';
 
 interface TopSummaryProps {
   selectedModel: Model;

@@ -1,17 +1,7 @@
 import React from 'react';
 
 // Define the shape of a Model
-interface Model {
-  id: string;
-  name: string;
-  tag? : string;
-  inPrice: number;
-  outPrice: number;
-  source: string;
-  dotColor: string;
-  tagColor: string;
-  cacheRate?: number;
-}
+import { Model } from '../types';
 
 // Define the Props for the component
 interface AllModelsRankedProps {

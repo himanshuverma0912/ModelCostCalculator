@@ -1,14 +1,14 @@
 "use client";
 import React, { useState } from 'react';
 // import ModelConfigCard from '../components/ModelConfigCard';
-import VectorDbCard,{VectorDb} from '../components/VectorDbCard';
+import VectorDbCard from '../components/VectorDbCard';
 import EmbeddingCard from '../components/EmbeddingCard';
 import AllModelsRankedCard from '../components/AllModelsRankedCard';
 import ScaleProjectionCard from '../components/ScaleProjectionCard';
 import ScaleAndSummaryCard from '../components/ScaleAndSummaryCard';
 import TopSummaryBanner from '../components/TopSummaryBanner';
-import ModelConfigCard, { Model } from '../components/ModelConfigCard';
-
+import ModelConfigCard from '../components/ModelConfigCard';
+import { Model, VectorDb, EmbeddingModel } from '../types';
 // --- DATA ARRAYS ---
 const LLM_MODELS = [
   { id: 'gpt-5-nano', name: 'GPT-5 Nano', tag: 'CHEAPEST', inPrice: 0.05, outPrice: 0.4, source: 'openai.com', dotColor: 'bg-green-500', tagColor: '#22c55e',cacheRate: 0.10 },
@@ -46,14 +46,14 @@ const EMBEDDING_MODELS = [
 //   tagColor: string;
 //   cacheRate?: number;
 // }
-interface EmbeddingModel {
-  id: string;
-  name: string;
-  provider: string;
-  price: number;
-  dimensions: string;
-  tag?: string;
-}
+// interface EmbeddingModel {
+//   id: string;
+//   name: string;
+//   provider: string;
+//   price: number;
+//   dimensions: string;
+//   tag?: string;
+// }
 
 // interface VectorDb {
 //   id: string;
