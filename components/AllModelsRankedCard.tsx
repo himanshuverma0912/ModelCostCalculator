@@ -4,7 +4,7 @@ import React from 'react';
 interface Model {
   id: string;
   name: string;
-  tag?: string;
+  tag : string;
   inPrice: number;
   outPrice: number;
   source: string;
