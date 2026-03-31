@@ -94,9 +94,9 @@ export default function Home() {
             
             {/* 1. LLM CONFIGURATION */}
             <ModelConfigCard 
-              models={LLM_MODELS}
-              selectedModel={selectedModel}
-              setSelectedModel={setSelectedModel}
+              models={LLM_MODELS as any}                   
+              selectedModel={selectedModel as any}         
+              setSelectedModel={(m) => setSelectedModel(m as any)} 
               inputTokens={inputTokens}
               setInputTokens={setInputTokens}
               outputTokens={outputTokens}
