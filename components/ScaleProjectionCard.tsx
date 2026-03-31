@@ -61,7 +61,7 @@ export default function ScaleProjectionCard({
 
   return (
     <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 font-sans overflow-x-auto">
-      <h2 className="text-2xl font-serif font-bold mb-1">
+      <h2 className="text-2xl font-serif font-bold mb-1 flex items-center gap-2 text-gray-900">
         Scale Projection
       </h2>
       <p className="text-sm text-gray-500 mb-6">
