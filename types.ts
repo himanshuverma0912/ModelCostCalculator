@@ -9,7 +9,7 @@ export interface Model {
   source: string;
   dotColor: string;
   tagColor: string;
-  cacheRate: number;
+  cacheRate?: number;
 }
 
 export interface EmbeddingModel {

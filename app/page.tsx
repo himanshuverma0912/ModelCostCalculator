@@ -10,7 +10,7 @@ import TopSummaryBanner from '../components/TopSummaryBanner';
 import ModelConfigCard from '../components/ModelConfigCard';
 import { Model, VectorDb, EmbeddingModel } from '../types';
 // --- DATA ARRAYS ---
-const LLM_MODELS = [
+const LLM_MODELS:Model[] = [
   { id: 'gpt-5-nano', name: 'GPT-5 Nano', tag: 'CHEAPEST', inPrice: 0.05, outPrice: 0.4, source: 'openai.com', dotColor: 'bg-green-500', tagColor: '#22c55e',cacheRate: 0.10 },
   { id: 'deepseek-v3', name: 'DeepSeek V3.2', tag: 'LOW COST', inPrice: 0.28, outPrice: 0.42, source: 'deepseek.com', dotColor: 'bg-yellow-400', tagColor: '#eab308',cacheRate: 0.10 },
   { id: 'grok-4-fast', name: 'Grok 4.1 Fast', tag: 'BEST VALUE', inPrice: 0.2, outPrice: 0.5, source: 'x.ai', dotColor: 'bg-purple-500', tagColor: '#a855f7',cacheRate: 0.10 },
