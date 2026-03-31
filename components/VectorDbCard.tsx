@@ -1,19 +1,19 @@
 import React from 'react';
 
 // Define the shape of a Vector Database Plan
-interface VectorDatabase {
+export interface VectorDb {
   id: string;
   name: string;
   price: number;
+  storageLimit: string; // <-- Make sure there is NO '?' here
   description: string;
   tag?: string;
-  storageLimit?: string;
 }
 
 interface VectorDbProps {
-  databases: VectorDatabase[];
-  selectedDb: VectorDatabase;
-  setSelectedDb: (db: VectorDatabase) => void;
+  databases: VectorDb[]; 
+  selectedDb: VectorDb;  
+  setSelectedDb: (db: VectorDb) => void;
 }
 
 export default function VectorDbCard({

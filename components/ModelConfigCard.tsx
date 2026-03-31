@@ -1,5 +1,5 @@
 import React from 'react';
-interface Model {
+export interface Model {
   id: string;
   name: string;
   inPrice: number;
@@ -7,7 +7,7 @@ interface Model {
   dotColor: string;
   tagColor: string;
   tag?: string;      // Optional to stay safe
-  source?: string;
+  source : string;
   cacheRate?: number;
 }
 

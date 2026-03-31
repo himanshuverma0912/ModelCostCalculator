@@ -1,12 +1,14 @@
 "use client";
 import React, { useState } from 'react';
-import ModelConfigCard from '../components/ModelConfigCard';
-import VectorDbCard from '../components/VectorDbCard';
+// import ModelConfigCard from '../components/ModelConfigCard';
+import VectorDbCard,{VectorDb} from '../components/VectorDbCard';
 import EmbeddingCard from '../components/EmbeddingCard';
 import AllModelsRankedCard from '../components/AllModelsRankedCard';
 import ScaleProjectionCard from '../components/ScaleProjectionCard';
 import ScaleAndSummaryCard from '../components/ScaleAndSummaryCard';
 import TopSummaryBanner from '../components/TopSummaryBanner';
+import ModelConfigCard, { Model } from '../components/ModelConfigCard';
+
 // --- DATA ARRAYS ---
 const LLM_MODELS = [
   { id: 'gpt-5-nano', name: 'GPT-5 Nano', tag: 'CHEAPEST', inPrice: 0.05, outPrice: 0.4, source: 'openai.com', dotColor: 'bg-green-500', tagColor: '#22c55e',cacheRate: 0.10 },
@@ -33,21 +35,50 @@ const EMBEDDING_MODELS = [
   { id: 'gemini-emb', name: 'Gemini text-embedding', provider: 'Google', price: 0, dimensions: '768d', tag: 'FREE' },
   { id: 'cohere-v3', name: 'embed-english-v3', provider: 'Cohere', price: 0.10, dimensions: '1024d' }
 ];
+// interface Model {
+//   id: string;
+//   name: string;
+//   tag?: string; // The '?' makes it optional, which matches your data
+//   inPrice: number;
+//   outPrice: number;
+//   source: string;
+//   dotColor: string;
+//   tagColor: string;
+//   cacheRate?: number;
+// }
+interface EmbeddingModel {
+  id: string;
+  name: string;
+  provider: string;
+  price: number;
+  dimensions: string;
+  tag?: string;
+}
+
+// interface VectorDb {
+//   id: string;
+//   name: string;
+//   price: number;
+//   storageLimit: string;
+//   description: string;
+//   tag?: string;
+// }
 
 export default function Home() {
   // --- GLOBAL STATES ---
   const [users, setUsers] = useState(1000);
   const [msgsPerDay, setMsgsPerDay] = useState(10);
 
+
   // --- COMPONENT STATES ---
-  const [selectedModel, setSelectedModel] = useState(LLM_MODELS[5]); // Default Claude Haiku
+  const [selectedModel, setSelectedModel] = useState<Model>(LLM_MODELS[5]);
   const [inputTokens, setInputTokens] = useState(1100);
   const [outputTokens, setOutputTokens] = useState(400);
   const [useCaching, setUseCaching] = useState(true);
   const [cachedTokens, setCachedTokens] = useState(450);
 
-  const [selectedEmbedding, setSelectedEmbedding] = useState(EMBEDDING_MODELS[0]); // Default text-embedding-3-small
-  const [selectedDb, setSelectedDb] = useState(VECTOR_DATABASES[0]); // Default Pinecone Free
+  const [selectedEmbedding, setSelectedEmbedding] = useState<EmbeddingModel>(EMBEDDING_MODELS[0]);
+  const [selectedDb, setSelectedDb] = useState<VectorDb>(VECTOR_DATABASES[0]);
 
   return (
     <main className="min-h-screen bg-[#fdfbf7] p-4 md:p-8 font-sans">
