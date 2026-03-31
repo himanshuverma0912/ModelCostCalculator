@@ -1,5 +1,31 @@
 import React from 'react';
 
+// Define the shape of a Model
+interface Model {
+  id: string;
+  name: string;
+  tag?: string;
+  inPrice: number;
+  outPrice: number;
+  source: string;
+  dotColor: string;
+  tagColor: string;
+  cacheRate?: number;
+}
+
+// Define the Props for the component
+interface AllModelsRankedProps {
+  models: Model[];
+  selectedModel: Model;
+  setSelectedModel: (model: Model) => void;
+  users: number;
+  msgsPerDay: number;
+  inputTokens: number;
+  outputTokens: number;
+  useCaching: boolean;
+  cachedTokens: number;
+}
+
 export default function AllModelsRankedCard({
   models,
   selectedModel,
@@ -10,7 +36,7 @@ export default function AllModelsRankedCard({
   outputTokens,
   useCaching,
   cachedTokens
-}) {
+}: AllModelsRankedProps) {
   
   const modelsWithCosts = models.map(m => {
     const totalMsgs = users * msgsPerDay * 30;
