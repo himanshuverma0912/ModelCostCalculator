@@ -65,7 +65,7 @@ export default function ScaleProjectionCard({
         Scale Projection
       </h2>
       <p className="text-sm text-gray-500 mb-6">
-        {selectedModel.name} (${selectedModel.inPrice}/${parseFloat((selectedModel.inPrice * 0.1).toFixed(4))}/${selectedModel.outPrice}) + {selectedEmbedding.name} + {selectedDb.name} — <span className="italic">click a row to set users</span>
+        {selectedModel?.name ?? "Loading..." } (${selectedModel?.inPrice ?? 0}/${parseFloat(((selectedModel?.inPrice ?? 0) * 0.1).toFixed(4))}/${selectedModel?.outPrice ?? 0}) + {selectedEmbedding?.name ?? "Loading..."} + {selectedDb?.name} — <span className="italic">click a row to set users</span>
       </p>
 
       <table className="w-full text-left border-collapse min-w-[800px]">
@@ -86,7 +86,7 @@ export default function ScaleProjectionCard({
             // Do the math for this specific row tier
             const msgsPerMonth = tier * msgsPerDay * 30;
             const llmMonthly = msgsPerMonth * llmCostPerMsg;
-            const embedMonthly = ((tier * embedTokensPerUserPerMonth) / 1000000) * selectedEmbedding.price;
+            const embedMonthly = ((tier * embedTokensPerUserPerMonth) / 1000000) * (selectedEmbedding?.price ?? 0);
             const vdbMonthly = selectedDb.price; // Vector DB is a flat monthly fee
             const totalMonthly = llmMonthly + embedMonthly + vdbMonthly;
             

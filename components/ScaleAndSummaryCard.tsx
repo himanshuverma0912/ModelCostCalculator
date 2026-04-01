@@ -43,7 +43,7 @@ export default function ScaleAndSummaryCard({
   const llmMonthly = users * msgsPerDay * 30 * llmCostPerMsg;
 
   // 2. Embedding Math (5100 daily tokens per user from our previous breakdown)
-  const embedMonthly = ((5100 * users * 30) / 1000000) * selectedEmbedding.price;
+  const embedMonthly = ((5100 * users * 30) / 1000000) * (selectedEmbedding?.price ?? 0);
 
   // 3. Vector DB Math
   const vdbMonthly = selectedDb.price;

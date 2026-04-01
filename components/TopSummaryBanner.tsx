@@ -39,7 +39,7 @@ export default function TopSummaryBanner({
   const savingsPct = llmMonthlyNoCache > 0 ? (savings / llmMonthlyNoCache) * 100 : 0;
 
   // 3. Embedding & Vector DB Math
-  const embedMonthly = ((5100 * users * 30) / 1000000) * selectedEmbedding.price;
+  const embedMonthly = ((5100 * users * 30) / 1000000) * (selectedEmbedding?.price ?? 0);
   const vdbMonthly = selectedDb.price;
 
   // 4. Grand Total

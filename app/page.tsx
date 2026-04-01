@@ -41,13 +41,16 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedModel, setSelectedModel] = useState<Model | null>(null);
 
+  // --- DYNAMIC EMBEDDING STATES ---
+  const [embeddingModels, setEmbeddingModels] = useState<EmbeddingModel[]>([]);
+  const [selectedEmbedding, setSelectedEmbedding] = useState<EmbeddingModel | null>(null);
   // --- COMPONENT STATES ---
   const [inputTokens, setInputTokens] = useState(1100);
   const [outputTokens, setOutputTokens] = useState(400);
   const [useCaching, setUseCaching] = useState(true);
   const [cachedTokens, setCachedTokens] = useState(450);
 
-  const [selectedEmbedding, setSelectedEmbedding] = useState<EmbeddingModel>(EMBEDDING_MODELS[0]);
+  // const [selectedEmbedding, setSelectedEmbedding] = useState<EmbeddingModel>(EMBEDDING_MODELS[0]);
   const [selectedDb, setSelectedDb] = useState<VectorDb>(VECTOR_DATABASES[0]);
   // --- 2. ADD THIS FUNCTION RIGHT HERE ---
   const handleRemoveModel = (idToRemove: string) => {
@@ -72,9 +75,9 @@ export default function Home() {
         const rawUrl = 'https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json';
         const response = await fetch(rawUrl);
         const data = await response.json();
-
+        const entries = Object.entries(data);
         // Map EVERY valid chat model from the API
-        const mappedModels: Model[] = Object.entries(data)
+        const chatModels: Model[] = entries
           .filter(([id, apiModel]: [string, any]) => 
              apiModel.input_cost_per_token !== undefined && 
              apiModel.mode === "chat"
@@ -100,13 +103,30 @@ export default function Home() {
                 ? (apiModel.cache_read_input_token_cost / apiModel.input_cost_per_token) : 0.10,
             };
           });
+          // 2. Map EMBEDDING MODELS
+        const embedModels: EmbeddingModel[] = entries
+          .filter(([id, apiModel]: [string, any]) => 
+             apiModel.mode === "embedding" && apiModel.input_cost_per_token !== undefined
+          )
+          .map(([id, apiModel]: [string, any]) => ({
+            id: id,
+            name: id.split('/').pop()?.replace(/-/g, ' ').toUpperCase() || id,
+            provider: (apiModel.litellm_provider || "Provider").toUpperCase(),
+            price: parseFloat((apiModel.input_cost_per_token * 1000000).toFixed(4)) || 0,
+            dimensions: apiModel.max_tokens ? `${apiModel.max_tokens}d` : "768d", // Fallback dimension
+          }))
+          // Sort to show popular ones first
+          .sort((a, b) => a.id.includes('openai') ? -1 : 1);
+
+        setAllModels(chatModels);
+        setEmbeddingModels(embedModels);
 
         // Save ALL 500+ models to the background state
-        setAllModels(mappedModels);
+        // setAllModels(mappedModels);
 
         // Set a few default models so the screen isn't empty on first load
         const defaultIds = ["gpt-4o", "claude-3-5-sonnet-20240620", "gemini-1.5-pro"];
-        const defaultModels = mappedModels.filter(m => defaultIds.includes(m.id));
+        const defaultModels = chatModels.filter(m => defaultIds.includes(m.id));
         
         setLlmModels(defaultModels);
         if (defaultModels.length > 0) setSelectedModel(defaultModels[0]);
@@ -150,7 +170,7 @@ export default function Home() {
         {/* TOP SUMMARY BANNER */}
         <TopSummaryBanner 
           selectedModel={selectedModel}
-          selectedEmbedding={selectedEmbedding}
+          selectedEmbedding={selectedEmbedding as any}
           selectedDb={selectedDb}
           users={users}
           msgsPerDay={msgsPerDay}
@@ -220,8 +240,8 @@ export default function Home() {
 
             {/* 2. EMBEDDING CONFIGURATION */}
             <EmbeddingCard 
-              models={EMBEDDING_MODELS}
-              selectedModel={selectedEmbedding}
+              models={embeddingModels}
+              selectedModel={selectedEmbedding!}
               setSelectedModel={setSelectedEmbedding}
               users={users}
             />
@@ -248,7 +268,7 @@ export default function Home() {
               outputTokens={outputTokens}
               useCaching={useCaching}
               cachedTokens={cachedTokens}
-              selectedEmbedding={selectedEmbedding}
+              selectedEmbedding={selectedEmbedding as any}
               selectedDb={selectedDb}
             />
 
@@ -273,7 +293,7 @@ export default function Home() {
         <div className="mt-8">
           <ScaleProjectionCard 
             selectedModel={selectedModel}
-            selectedEmbedding={selectedEmbedding}
+            selectedEmbedding={selectedEmbedding as any}
             selectedDb={selectedDb}
             users={users}
             setUsers={setUsers}
