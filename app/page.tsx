@@ -35,6 +35,12 @@ export default function Home() {
   const [users, setUsers] = useState(1000);
   const [msgsPerDay, setMsgsPerDay] = useState(10);
 
+  // --- CUSTOM MODEL STATES ---
+  const [isCustomFormOpen, setIsCustomFormOpen] = useState(false);
+  const [customName, setCustomName] = useState('');
+  const [customInPrice, setCustomInPrice] = useState<number | string>('');
+  const [customOutPrice, setCustomOutPrice] = useState<number | string>('');
+
   // --- DYNAMIC LLM STATES ---
   const [allModels, setAllModels] = useState<Model[]>([]); // The hidden master list (500+ models)
   const [llmModels, setLlmModels] = useState<Model[]>([]); // The visible list on the screen
@@ -44,15 +50,16 @@ export default function Home() {
   // --- DYNAMIC EMBEDDING STATES ---
   const [embeddingModels, setEmbeddingModels] = useState<EmbeddingModel[]>([]);
   const [selectedEmbedding, setSelectedEmbedding] = useState<EmbeddingModel | null>(null);
+
   // --- COMPONENT STATES ---
   const [inputTokens, setInputTokens] = useState(1100);
   const [outputTokens, setOutputTokens] = useState(400);
   const [useCaching, setUseCaching] = useState(true);
   const [cachedTokens, setCachedTokens] = useState(450);
 
-  // const [selectedEmbedding, setSelectedEmbedding] = useState<EmbeddingModel>(EMBEDDING_MODELS[0]);
   const [selectedDb, setSelectedDb] = useState<VectorDb>(VECTOR_DATABASES[0]);
-  // --- 2. ADD THIS FUNCTION RIGHT HERE ---
+
+  // --- REMOVE MODEL LOGIC ---
   const handleRemoveModel = (idToRemove: string) => {
     if (llmModels.length <= 1) {
       alert("You must have at least one model in the comparison list.");
@@ -62,11 +69,44 @@ export default function Home() {
     const newList = llmModels.filter(m => m.id !== idToRemove);
     setLlmModels(newList);
 
-    // If the active model was the one deleted, switch selection to the first available one
     if (selectedModel?.id === idToRemove) {
       setSelectedModel(newList[0]);
     }
   };
+
+  // --- ADD CUSTOM MODEL LOGIC ---
+  const handleAddCustomModel = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const inPriceNum = parseFloat(customInPrice.toString());
+    const outPriceNum = parseFloat(customOutPrice.toString());
+    
+    if (!customName || isNaN(inPriceNum) || isNaN(outPriceNum)) {
+      alert("Please fill out all fields with valid numbers.");
+      return;
+    }
+
+    const newCustomModel: Model = {
+      id: `custom-${Date.now()}`,
+      name: customName.toUpperCase(),
+      tag: "CUSTOM",
+      inPrice: inPriceNum,
+      outPrice: outPriceNum,
+      source: "manual-entry",
+      dotColor: "bg-purple-500",
+      tagColor: "#a855f7",
+      cacheRate: 0.10,
+    };
+
+    setLlmModels(prev => [...prev, newCustomModel]);
+    setSelectedModel(newCustomModel);
+    
+    setCustomName('');
+    setCustomInPrice('');
+    setCustomOutPrice('');
+    setIsCustomFormOpen(false);
+  };
+
   // --- FETCH DYNAMIC MODELS ON LOAD ---
   useEffect(() => {
     async function fetchModels() {
@@ -76,7 +116,8 @@ export default function Home() {
         const response = await fetch(rawUrl);
         const data = await response.json();
         const entries = Object.entries(data);
-        // Map EVERY valid chat model from the API
+
+        // Map CHAT MODELS
         const chatModels: Model[] = entries
           .filter(([id, apiModel]: [string, any]) => 
              apiModel.input_cost_per_token !== undefined && 
@@ -103,7 +144,8 @@ export default function Home() {
                 ? (apiModel.cache_read_input_token_cost / apiModel.input_cost_per_token) : 0.10,
             };
           });
-          // 2. Map EMBEDDING MODELS
+
+        // Map EMBEDDING MODELS
         const embedModels: EmbeddingModel[] = entries
           .filter(([id, apiModel]: [string, any]) => 
              apiModel.mode === "embedding" && apiModel.input_cost_per_token !== undefined
@@ -113,18 +155,13 @@ export default function Home() {
             name: id.split('/').pop()?.replace(/-/g, ' ').toUpperCase() || id,
             provider: (apiModel.litellm_provider || "Provider").toUpperCase(),
             price: parseFloat((apiModel.input_cost_per_token * 1000000).toFixed(4)) || 0,
-            dimensions: apiModel.max_tokens ? `${apiModel.max_tokens}d` : "768d", // Fallback dimension
+            dimensions: apiModel.max_tokens ? `${apiModel.max_tokens}d` : "768d",
           }))
-          // Sort to show popular ones first
           .sort((a, b) => a.id.includes('openai') ? -1 : 1);
 
         setAllModels(chatModels);
         setEmbeddingModels(embedModels);
 
-        // Save ALL 500+ models to the background state
-        // setAllModels(mappedModels);
-
-        // Set a few default models so the screen isn't empty on first load
         const defaultIds = ["gpt-4o", "claude-3-5-sonnet-20240620", "gemini-1.5-pro"];
         const defaultModels = chatModels.filter(m => defaultIds.includes(m.id));
         
@@ -186,41 +223,86 @@ export default function Home() {
           {/* LEFT COLUMN: Configuration Stack (The Inputs) */}
           <div className="xl:col-span-6 flex flex-col gap-8">
             
-            {/* --- NEW: MODEL SEARCH & ADD BROWSER --- */}
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col gap-2">
-              <p className="text-[10px] font-bold text-[#a39171] uppercase tracking-widest">
-                ➕ Add a Model from Database
-              </p>
-              <select 
-                className="w-full p-2.5 border border-gray-200 rounded-lg text-sm font-medium bg-[#fdfbf7] focus:border-[#c49a45] focus:outline-none transition-colors cursor-pointer text-gray-700"
-                defaultValue=""
-                onChange={(e) => {
-                  const selectedId = e.target.value;
-                  if (!selectedId) return;
-                  
-                  // 1. Find the model in the master list
-                  const newModel = allModels.find(m => m.id === selectedId);
-                  
-                  // 2. Add it to the visible list (if it isn't already there)
-                  if (newModel && !llmModels.some(m => m.id === newModel.id)) {
-                    setLlmModels(prev => [...prev, newModel]);
-                    setSelectedModel(newModel); // Auto-select it immediately
-                  } else if (newModel) {
-                    // Even if it's already in the list, auto-select it for convenience
-                    setSelectedModel(newModel);
-                  }
-                  
-                  // 3. Reset dropdown back to default placeholder
-                  e.target.value = "";
-                }}
-              >
-                <option value="" disabled>-- Search & Add from 500+ Models --</option>
-                {allModels.map(m => (
-                  <option key={m.id} value={m.id}>
-                    {m.name} ({m.source})
-                  </option>
-                ))}
-              </select>
+            {/* --- UPDATED: MODEL SEARCH & ADD BROWSER --- */}
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col gap-4">
+              <div className="flex justify-between items-center">
+                <p className="text-[10px] font-bold text-[#a39171] uppercase tracking-widest">
+                  ➕ Add Model to Comparison
+                </p>
+                <button 
+                  onClick={() => setIsCustomFormOpen(!isCustomFormOpen)}
+                  className="text-xs font-bold text-[#c49a45] hover:text-[#a39171] transition-colors flex items-center gap-1"
+                >
+                  {isCustomFormOpen ? "Cancel Custom" : "⚙️ Create Custom"}
+                </button>
+              </div>
+
+              {!isCustomFormOpen ? (
+                <select 
+                  className="w-full p-2.5 border border-gray-200 rounded-lg text-sm font-medium bg-[#fdfbf7] focus:border-[#c49a45] focus:outline-none transition-colors cursor-pointer text-gray-700"
+                  defaultValue=""
+                  onChange={(e) => {
+                    const selectedId = e.target.value;
+                    if (!selectedId) return;
+                    
+                    const newModel = allModels.find(m => m.id === selectedId);
+                    
+                    if (newModel && !llmModels.some(m => m.id === newModel.id)) {
+                      setLlmModels(prev => [...prev, newModel]);
+                      setSelectedModel(newModel);
+                    } else if (newModel) {
+                      setSelectedModel(newModel);
+                    }
+                    
+                    e.target.value = "";
+                  }}
+                >
+                  <option value="" disabled>-- Search & Add from 500+ Models --</option>
+                  {allModels.map(m => (
+                    <option key={m.id} value={m.id}>
+                      {m.name} ({m.source})
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <form onSubmit={handleAddCustomModel} className="flex flex-col gap-3 bg-purple-50 p-4 rounded-lg border border-purple-100">
+                  <input 
+                    type="text" 
+                    placeholder="Custom Model Name (e.g., Llama-3 Fine-Tuned)" 
+                    className="p-2 border border-purple-200 rounded text-sm w-full focus:outline-none focus:border-purple-500 !text-black bg-white placeholder:text-gray-400 shadow-inner block"
+                    value={customName}
+                    onChange={(e) => setCustomName(e.target.value)}
+                    required
+                  />
+                  <div className="flex gap-3">
+                    <div className="flex-1 relative">
+                      <span className="absolute left-3 top-2 text-gray-500 font-medium text-sm">$</span>
+                      <input 
+                        type="number" step="0.0001" min="0"
+                        placeholder="In Price / 1M" 
+                        className="p-2 pl-7 border border-purple-200 rounded text-sm w-full focus:outline-none focus:border-purple-500 text-gray-900 bg-white placeholder-gray-400 shadow-inner"
+                        value={customInPrice}
+                        onChange={(e) => setCustomInPrice(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="flex-1 relative">
+                      <span className="absolute left-3 top-2 text-gray-500 font-medium text-sm">$</span>
+                      <input 
+                        type="number" step="0.0001" min="0"
+                        placeholder="Out Price / 1M" 
+                        className="p-2 pl-7 border border-purple-200 rounded text-sm w-full focus:outline-none focus:border-purple-500 text-gray-900 bg-white placeholder-gray-400 shadow-inner"
+                        value={customOutPrice}
+                        onChange={(e) => setCustomOutPrice(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                  <button type="submit" className="bg-purple-600 text-white font-bold text-sm py-2 rounded hover:bg-purple-700 transition-colors shadow-sm">
+                    Add Custom Model
+                  </button>
+                </form>
+              )}
             </div>
 
             {/* 1. LLM CONFIGURATION */}
@@ -242,7 +324,7 @@ export default function Home() {
             <EmbeddingCard 
               models={embeddingModels}
               selectedModel={selectedEmbedding!}
-              setSelectedModel={setSelectedEmbedding}
+              setSelectedModel={setSelectedEmbedding as any}
               users={users}
             />
 
